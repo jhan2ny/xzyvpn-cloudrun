@@ -1,0 +1,37 @@
+name: Build XzyVpn CloudRun
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+  packages: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Linux AMD64 image
+        run: docker build --platform linux/amd64 -t xzyvpn-test .
+      - name: Check all five Xray configurations
+        shell: bash
+        run: |
+          set -euo pipefail
+          for mode in trojan-ws vless-ws vless-grpc vmess-ws vless-xhttp; do
+            credential=$(cat /proc/sys/kernel/random/uuid)
+            if [[ "$mode" == trojan-ws ]]; then credential=$(openssl rand -hex 32); fi
+            docker run --rm -e VPN_MODE="$mode" -e VPN_CREDENTIAL="$credential" xzyvpn-test --check
+          done
+      - name: Publish GHCR image
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          image="ghcr.io/${GITHUB_REPOSITORY,,}"
+          printf '%s' "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          docker tag xzyvpn-test "$image:$GITHUB_SHA"
+          docker tag xzyvpn-test "$image:latest"
+          docker push "$image:$GITHUB_SHA"
+          docker push "$image:latest"
+          docker logout ghcr.io
