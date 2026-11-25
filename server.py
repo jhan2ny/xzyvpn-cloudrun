@@ -51,7 +51,7 @@ def config(env):
                       {'protocol': 'blackhole', 'tag': 'blocked'}],
         'routing': {'domainStrategy': 'IPOnDemand', 'rules': [
             {'type': 'field', 'domain': ['domain:localhost', 'domain:internal', 'full:metadata.google.internal'], 'outboundTag': 'blocked'},
-            {'type': 'field', 'ip': ['0.0.0.0/8', '10.0.0.0/8', '100.64.0.0/10', '127.0.0.0/8', '169.254.0.0/16', '172.16.0.0/12', '192.168.0.0/16', '224.0.0.0/4', '240.0.0.0/4', '::/128', '::1/128', '::ffff:0:0/96', 'fc00::/7', 'fe80::/10', 'ff00::/8'], 'outboundTag': 'blocked'},
+            {'type': 'field', 'ip': ['0.0.0.0/8', '10.0.0.0/8', '100.64.0.0/10', '127.0.0.0/8', '169.254.0.0/16', '172.16.0.0/12', '192.168.0.0/16', '224.0.0.0/4', '240.0.0.0/4', '::/128', '::1/128', 'fc00::/7', 'fe80::/10', 'ff00::/8'], 'outboundTag': 'blocked'},
             {'type': 'field', 'port': '25', 'outboundTag': 'blocked'}]}
     }
 
